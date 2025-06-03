@@ -67,5 +67,12 @@ jobs:
           echo "Tutor installation completed. Starting LMS setup..."
           bash lms.sh
           
+          echo "Restarting Open edX platform with custom theme...""
+          tutor local stop
+          tutor local start -d
+          tutor local restart
+          
+          echo "Open edX platform is now running with the custom Indigo theme and fro-auth plugin enabled."
+                    
           echo "All installations completed successfully!"
           EOF
