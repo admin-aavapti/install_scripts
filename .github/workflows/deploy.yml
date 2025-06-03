@@ -56,9 +56,10 @@ jobs:
 
       - name: Run Tutor and LMS installation
         run: |
-          ssh azureuser@${{ secrets.VM_HOST }} << 'EOF'
+                  ssh azureuser@${{ secrets.VM_HOST }} << 'EOF'
           set -euxo pipefail
           
+          export PATH=$PATH:/home/azureuser/.local/bin
           cd install_scripts
           
           echo "Installing Tutor..."
@@ -67,7 +68,7 @@ jobs:
           echo "Tutor installation completed. Starting LMS setup..."
           bash lms.sh
           
-          echo "Restarting Open edX platform with custom theme...""
+          echo "Restarting Open edX platform with custom theme..."
           tutor local stop
           tutor local start -d
           tutor local restart
@@ -76,3 +77,4 @@ jobs:
                     
           echo "All installations completed successfully!"
           EOF
+
