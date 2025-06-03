@@ -1,0 +1,71 @@
+name: Deploying to AzureVM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-and-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run commands on VM
+        run: |
+          ssh azureuser@${{ secrets.VM_HOST }} << 'EOF'
+          set -euxo pipefail
+
+          # Clone repo or pull latest changes
+          if [ -d "install_scripts" ]; then
+            echo "Repository exists, pulling latest changes..."
+            cd install_scripts
+            git pull
+          else
+            echo "Cloning repository..."
+            git clone https://github.com/admin-aavapti/install_scripts.git
+            cd install_scripts
+          fi
+
+          chmod +x install_docker.sh install_tutor.sh lms.sh
+
+          echo "Installing Docker..."
+          bash install_docker.sh
+
+          echo "Adding user to docker group..."
+          sudo usermod -aG docker $USER
+          sudo systemctl enable docker
+          sudo systemctl start docker
+          sudo systemctl status docker
+
+          echo "Cleaning Docker system to free space..."
+          sudo docker builder prune -af
+          sudo docker system prune -af --volumes
+
+          EOF
+
+      - name: Wait for group changes to take effect
+        run: sleep 15
+
+      - name: Run Tutor and LMS installation
+        run: |
+          ssh azureuser@${{ secrets.VM_HOST }} << 'EOF'
+          set -euxo pipefail
+          
+          cd install_scripts
+          
+          echo "Installing Tutor..."
+          bash install_tutor.sh
+          
+          echo "Tutor installation completed. Starting LMS setup..."
+          bash lms.sh
+          
+          echo "All installations completed successfully!"
+          EOF
