@@ -30,7 +30,7 @@ jobs:
             git pull
           else
             echo "Cloning repository..."
-            git clone https://github.com/admin-aavapti/install_scripts.git
+            git clone https://${{ secrets.GH_PAT }}@github.com/admin-aavapti/install_scripts.git
             cd install_scripts
           fi
 
