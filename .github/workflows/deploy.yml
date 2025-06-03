@@ -56,7 +56,7 @@ jobs:
 
       - name: Run Tutor and LMS installation
         run: |
-                  ssh azureuser@${{ secrets.VM_HOST }} << 'EOF'
+          ssh azureuser@${{ secrets.VM_HOST }} << 'EOF'
           set -euxo pipefail
           
           export PATH=$PATH:/home/azureuser/.local/bin
