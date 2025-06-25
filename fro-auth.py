@@ -6,7 +6,7 @@ import os
 @MFE_APPS.add()
 def _add_custom_authoring_mfe(mfes):
     mfes["authoring"] = {
-        "repository": f"https://admin-aavapti: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@github.com/admin-aavapti/frontend-app-authoring.git",
+        "repository": f"https://admin-aavapti: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@github.com/admin-aavapti/frontend-app-authoring.git",
         "port": "9876",
         "version": "sumac.2",
     }
