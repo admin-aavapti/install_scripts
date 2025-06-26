@@ -2,6 +2,8 @@ name: Deploying to AzureVM
 
 on:
   workflow_dispatch:
+    branches:
+      - backup
 
 jobs:
   ssh-and-run:
